@@ -14,7 +14,13 @@ object ResourceUtil {
 
     fun isRuntimeMissing(): Boolean {
         val context = App.instance.get()
-        return !context!!.filesDir.resolve("glibc").exists()
+        return !isRuntimeReady(context!!.filesDir.resolve("glibc"))
+    }
+
+    fun isRuntimeReady(directory: File): Boolean {
+        return directory.resolve(".installed").isFile &&
+            directory.resolve("usr/bin/bash").canExecute() &&
+            directory.resolve("usr/lib/libc.so.6").isFile
     }
 
     fun isBootstrapIncomplete(): Boolean {
@@ -39,6 +45,10 @@ object ResourceUtil {
      * is missing, signifying that setup is required.
      */
     fun isEnvironmentIncomplete(): Boolean {
-        return isBootstrapIncomplete()
+        val directory = checkNotNull(App.instance.get()).filesDir.resolve("arch")
+        return isBootstrapIncomplete() ||
+            !listOf("bash", "git", "pacman", "java").all {
+                directory.resolve("usr/bin/$it").canExecute()
+            }
     }
 }
