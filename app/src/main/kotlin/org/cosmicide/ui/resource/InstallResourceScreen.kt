@@ -40,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
+import org.cosmicide.BuildConfig
 import org.cosmicide.util.ResourceUtil
 import org.cosmicide.util.extractTarZstStream
 import org.cosmicide.util.restoreSymlinksFromManifest
@@ -92,10 +93,14 @@ fun InstallResourcesScreen(
                         context.filesDir.resolve("glibc-deploy-error.log").delete()
                     }.onFailure { error ->
                         if (error is CancellationException) throw error
-                        android.util.Log.e("RuntimeSetup", "Runtime deployment failed", error)
-                        runCatching {
-                            context.filesDir.resolve("glibc-deploy-error.log")
-                                .writeText(error.stackTraceToString())
+                        if (BuildConfig.DEBUG) {
+                            android.util.Log.e("RuntimeSetup", "Runtime deployment failed", error)
+                            runCatching {
+                                context.filesDir.resolve("glibc-deploy-error.log")
+                                    .writeText(error.stackTraceToString())
+                            }
+                        } else {
+                            android.util.Log.e("RuntimeSetup", "Runtime deployment failed: ${error.javaClass.simpleName}")
                         }
                     }
                 }

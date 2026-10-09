@@ -33,10 +33,12 @@ object ResourceUtil {
         context.assets.open("setup.sh").use { input ->
             script.outputStream().use { output -> input.copyTo(output) }
         }
+        val packageInstaller = context.filesDir.resolve("alarm-pkg")
         context.assets.open("alarm-pkg").use { input ->
-            context.filesDir.resolve("alarm-pkg").outputStream().use { input.copyTo(it) }
+            packageInstaller.outputStream().use { input.copyTo(it) }
         }
-        script.setExecutable(true)
+        check(packageInstaller.setExecutable(true)) { "Cannot make package installer executable." }
+        check(script.setExecutable(true)) { "Cannot make setup script executable." }
         return script
     }
 
