@@ -1,5 +1,8 @@
 package org.cosmicide.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -57,6 +60,7 @@ fun IDENavigation() {
     )
 
     NavDisplay(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
         backStack = backStack,
         onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
         transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(180)) },
